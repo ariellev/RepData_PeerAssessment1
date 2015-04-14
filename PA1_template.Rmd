@@ -7,19 +7,106 @@ output:
 
 
 ## Loading and preprocessing the data
-
-
+```{r,echo=T, cache=T}
+unzip("activity.zip")
+d <- read.csv("activity.csv", header = T, na.strings = "NA", stringsAsFactor = F)
+d[,2] <- as.Date(d[,2])
+str(d)
+head(d)
+```
 
 ## What is mean total number of steps taken per day?
-
-
+```{r,echo=T, message=F, cache=T}
+require(dplyr)
+total_1 <- d %>% group_by(date) %>% summarize(sum = sum(steps, na.rm = T))
+hist(x = total_1$sum, xlab = "total steps", ylab = "days", main = "total steps per day")
+mean_1 <- mean(total_1$sum)
+mean_1
+med_1 <- median(total_1$sum)
+med_1
+```
 
 ## What is the average daily activity pattern?
+```{r,echo=T,message=F, fig.width=12, cache=T}
+require(ggplot2)
+# calculating average daily
+s <- d %>% group_by(interval) %>% summarize( avg = mean(steps, na.rm = T)) 
 
+# finding the maximum
+max <- subset(s, s$avg == max(s$avg))
+
+# plotting
+max_label <- sprintf("(%s,%s)", max$interval, round(max$avg,2))
+qplot(data = s, x = interval, y = avg, ylab = "average", main = "cross-day interval average") + geom_line() + geom_point(data=max, aes(x=interval, y=avg), colour="red", size=3) + annotate("text", max$interval + 200, max$avg, label = max_label, color = "red", size = 4)
+```
+
+#### Maximum Average 
+```{r,echo=T, cache=T}
+max
+```
 
 
 ## Imputing missing values
+#### Total number of incomplete observations
+```{r,echo=T, cache=T}
+nrow(d[!complete.cases(d),])
+```
 
+#### Copying original data set and filling in missing values with steps mean
+```{r,echo=T, cache=T}
+# calculating daily means
+s <- d %>% group_by(date) %>% summarize(mean = round(mean(steps, na.rm = T),0))
+s
 
+# replacing NAs from previous calculation, with "mean of means" 
+s_mean <- round(mean(s$mean,na.rm=T),0)
+s$mean <- unlist(lapply(s$mean, function(x) {if (is.na(x)) s_mean else x}))
+s
+
+# flling in NAs of original data set with daily means
+merged <- merge(d, s)
+imp <- merged %>% mutate(steps = ifelse(is.na(steps), mean, steps)) %>% select(steps, date, interval)
+head(imp)
+
+# verifiyng completeness 
+nrow(imp[!complete.cases(imp),])
+```
+
+#### Histogram
+```{r,echo=T, message=F, cache=T}
+total_2 <- imp %>% group_by(date) %>% summarize(sum = sum(steps, na.rm = T))
+hist(x = total_2$sum, xlab = "total steps", ylab = "days", main = "total steps per day")
+
+# new mean and median
+mean_2 <- mean(total_2$sum)
+mean_2
+med_2 <- median(total_2$sum)
+med_2
+```
+#### What is the impact of imputing missing data on the estimates of the total daily number of steps?
+```{r,echo=T, message=F, cache=T}
+# well in order to see that, lets put all information into a single data frame
+data.frame(mean = c(mean_1, mean_2), median = c(med_1, med_2), row.names = c("before", "after"))
+```
 
 ## Are there differences in activity patterns between weekdays and weekends?
+```{r,echo=T, message=F, cache=T}
+# creating a factor variable
+f <- factor (c("weekday", "weekend"))
+
+# impWD = "imputed with Week Days"
+impWD <- mutate(imp, type = ifelse(as.POSIXlt(date)$wday < 6, levels(f)[1], levels(f)[2]))
+xtabs(~type, impWD)
+
+avg_weekdays <- impWD %>% filter(type == "weekday") %>% group_by(interval) %>% summarize(avg = mean(steps))
+avg_weekdays$type <- f[1]
+avg_weekends <- impWD %>% filter(type == "weekend") %>% group_by(interval) %>% summarize(avg = mean(steps))
+avg_weekends$type <- f[2]
+
+# binding together into a single data set
+avgs <- rbind( avg_weekdays, avg_weekends) 
+
+# plotting
+require(lattice)
+xyplot( avgs$avg ~ avgs$interval | avgs$type, layout = c(1,2), xlab = "interval", ylab = "Number of steps", type = "l")
+```
