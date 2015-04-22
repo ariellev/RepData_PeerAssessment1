@@ -1,4 +1,9 @@
-# Reproducible Research: Peer Assessment 1
+---
+title: "Reproducible Research: Peer Assessment 1"
+output: 
+  html_document:
+    keep_md: true
+---
 
 
 ## Loading and preprocessing the data
@@ -39,7 +44,7 @@ total_1 <- d %>% group_by(date) %>% summarize(sum = sum(steps, na.rm = T))
 hist(x = total_1$sum, xlab = "total steps", ylab = "days", main = "total steps per day")
 ```
 
-![](PA1_template_files/figure-html/unnamed-chunk-2-1.png) 
+![plot of chunk unnamed-chunk-2](figure/unnamed-chunk-2-1.png) 
 
 ```r
 mean_1 <- mean(total_1$sum)
@@ -74,7 +79,7 @@ max_label <- sprintf("(%s,%s)", max$interval, round(max$avg,2))
 qplot(data = s, x = interval, y = avg, ylab = "average", main = "cross-day interval average") + geom_line() + geom_point(data=max, aes(x=interval, y=avg), colour="red", size=3) + annotate("text", max$interval + 200, max$avg, label = max_label, color = "red", size = 4)
 ```
 
-![](PA1_template_files/figure-html/unnamed-chunk-3-1.png) 
+![plot of chunk unnamed-chunk-3](figure/unnamed-chunk-3-1.png) 
 
 #### Maximum Average 
 
@@ -183,7 +188,7 @@ total_2 <- imp %>% group_by(date) %>% summarize(sum = sum(steps, na.rm = T))
 hist(x = total_2$sum, xlab = "total steps", ylab = "days", main = "total steps per day")
 ```
 
-![](PA1_template_files/figure-html/unnamed-chunk-7-1.png) 
+![plot of chunk unnamed-chunk-7](figure/unnamed-chunk-7-1.png) 
 
 ```r
 # new mean and median
@@ -247,4 +252,4 @@ require(lattice)
 xyplot( avgs$avg ~ avgs$interval | avgs$type, layout = c(1,2), xlab = "interval", ylab = "Number of steps", type = "l")
 ```
 
-![](PA1_template_files/figure-html/unnamed-chunk-9-1.png) 
+![plot of chunk unnamed-chunk-9](figure/unnamed-chunk-9-1.png) 
