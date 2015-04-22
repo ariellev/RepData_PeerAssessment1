@@ -1,3 +1,13 @@
+## Dear Coursera Peers,
+
+I forgot unfortunately to commit the md File to GitHub while submitting the work last week. Only today, during the evaluation phase that i noticed that it was missing. 
+Please consider it when evaluating. You can alternatively watch the report in rpubs.
+http://rpubs.com/ariellev/PA1_template
+
+
+Ariel Lev
+April 22nd, 2015
+
 ## Introduction
 
 It is now possible to collect a large amount of data about personal
