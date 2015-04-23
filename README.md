@@ -1,7 +1,6 @@
 ## Dear Coursera Peers,
 
-I forgot unfortunately to commit the md File to GitHub while submitting the work last week. Only today, during the evaluation phase that i noticed that it was missing. 
-Please consider it when evaluating. You can alternatively watch the report in rpubs.
+I forgot unfortunately to commit the md File to GitHub while submitting the work last week. Only today, during the evaluation phase that i noticed that it was missing. The Rmd is of course complete. All plots can be found under the "figures" folder. You can alternatively review the report in rpubs.
 http://rpubs.com/ariellev/PA1_template
 
 
